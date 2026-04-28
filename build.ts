@@ -11,7 +11,7 @@ import ChromeExtension from "npm:crx@^5.0.1";
 const knownTargets = new Set(["firefox", "chrome", "dev"]);
 const args = cli.parseArgs(Deno.args, { default: { target: "dev" } });
 if (args.target != undefined && !knownTargets.has(args.target)) {
-  console.error(`Unknown target: ${args.target}. Known targets:`)
+  console.error(`Unknown target: ${args.target}. Known targets:`);
   for (const t of knownTargets) {
     console.log(`\t- ${t}`);
   }
@@ -20,17 +20,10 @@ if (args.target != undefined && !knownTargets.has(args.target)) {
 
 await fs.emptyDir("./dist");
 
-const toCopy = [
-  "./src/popup.html",
-  "./src/popup.css",
-];
+const toCopy = ["./src/popup.html", "./src/popup.css"];
 
 if (args.target !== "chrome") {
   toCopy.push("./src/manifest.json", "./src/icon.svg");
-  // TODO: omit webextension-polyfill somehow.
-  // Hopefully Chrome just makes that unnecessary soon:
-  // https://issues.chromium.org/issues/40556351
-  // https://github.com/w3c/webextensions/pull/546
 } else {
   // I shouldn't have to do this in the first place,
   // so sue me for using an entire headless browser to render an SVG.
@@ -55,10 +48,7 @@ for (const srcPath of toCopy) {
   await fs.copy(srcPath, dstPath);
 }
 
-const entryPoints = [
-  "./src/popup-ui.js",
-  "./src/install-devtools.js",
-];
+const entryPoints = ["./src/popup-ui.js"];
 
 await esbuild.build({
   plugins: [...denoPlugins()],

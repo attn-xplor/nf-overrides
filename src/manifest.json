@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "SPA Overrides",
-  "author": "The0x539",
-  "homepage_url": "https://github.com/The0x539/spa-overrides",
+  "name": "NF Overrides",
+  "author": "attn-xplor",
+  "homepage_url": "https://github.com/attn-xplor/nf-overrides",
   "version": "1.0",
 
   "description": "A lightweight tool for making microfrontend substitutions.",
@@ -21,24 +21,15 @@
     "https://*/*"
   ],
 
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["install-devtools.js"],
-      "run_at": "document_start",
-      "world": "MAIN"
-    }
-  ],
-
   "action": {
     "default_icon": "icon.svg",
-    "default_title": "SPA Overrides",
+    "default_title": "NF Overrides",
     "default_popup": "popup.html"
   },
 
   "browser_specific_settings": {
     "gecko": {
-      "id": "{9012bb11-adcd-4233-8d48-6a0257aac7c1}"
+      "id": "{35c1648c-deae-4492-bcb3-a3265da98927}"
     }
   }
 }

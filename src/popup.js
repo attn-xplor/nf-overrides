@@ -1,11 +1,28 @@
 import browser from "webextension-polyfill";
 
+const key = 'MOD_FED_APPLICATION_OVERRIDES';
+
 export async function readOverrides() {
-  return await runInPage(readOverridesInjected);
+  return await runInPage(loadInjected);
+}
+
+async function update(f) {
+  const data = await readOverrides();
+  f(data);
+  await runInPage(saveInjected, data);
 }
 
 export async function saveOverride(override) {
-  await runInPage(saveOverrideInjected, override);
+  const { name, url, enabled } = override;
+  await update(data => data[name] = { url, enabled });
+}
+
+export async function removeOverride(name) {
+  await update(data => delete data[name]);
+}
+
+export async function createOverride(name) {
+  await update(data => data[name] = { url: '', enabled: false });
 }
 
 async function runInPage(func, ...args) {
@@ -23,32 +40,12 @@ async function getActiveTabId() {
   return tabs[0].id;
 }
 
-function readOverridesInjected() {
-  const ssd = globalThis.__SINGLE_SPA_DEVTOOLS__.exposedMethods;
-  const imo = globalThis.importMapOverrides;
-
-  if (!ssd || !imo) {
-    return [];
-  }
-
-  const rawAppData = ssd.getRawAppData();
-  const overrideMap = imo.getOverrideMap(true);
-
-  return rawAppData.map(({ name }) => {
-    const value = overrideMap.imports[name] ?? "";
-    const active = value === "" || !imo.isDisabled(name);
-    return { name, value, active };
-  });
+function loadInjected() {
+  const json = localStorage.getItem('MOD_FED_APPLICATION_OVERRIDES') ?? '{}';
+  return JSON.parse(json);
 }
 
-function saveOverrideInjected(o) {
-  const imo = globalThis.importMapOverrides;
-
-  imo.removeOverride(o.name);
-  if (o.value) {
-    imo.addOverride(o.name, o.value);
-    if (!o.active) {
-      imo.disableOverride(o.name);
-    }
-  }
+function saveInjected(data) {
+  const json = JSON.stringify(data);
+  localStorage.setItem('MOD_FED_APPLICATION_OVERRIDES', json);
 }
